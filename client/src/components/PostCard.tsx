@@ -34,13 +34,12 @@ export function PostCard({ post, onLike, onRepost, onBookmark, onComment }: Post
   return (
     <article className="post-enter px-4 py-3 border-b border-border hover:bg-accent/30 transition-colors duration-150 cursor-pointer">
       <div className="flex gap-3">
-        <Avatar 
-          initials={author.avatar} 
-          name={author.name} 
-          size="md" 
-        />
-
-        <div className="flex-1 min-w-0">
+      <Avatar 
+  initials={author?.avatar || "??"} 
+  name={author?.name || "Usuário"} 
+  size="md" 
+/>
+          <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 text-sm">
             <span className="font-display font-bold text-foreground truncate">{author.name}</span>
             {author.verified && (
