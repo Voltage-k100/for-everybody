@@ -40,10 +40,11 @@ export function useFeed() {
     );
   }, []);
 
+  // === FUNÇÃO CORRIGIDA ===
   const addPost = useCallback((content: string) => {
     const newPost: Post = {
       id: "p" + Date.now(),
-      authorId: currentUser.id,
+      authorId: currentUser.id || "me",
       content,
       timestamp: Date.now(),
       likes: 0,
@@ -64,5 +65,12 @@ export function useFeed() {
     );
   }, []);
 
-  return { posts, toggleLike, toggleRepost, toggleBookmark, addPost, addComment };
+  return { 
+    posts, 
+    toggleLike, 
+    toggleRepost, 
+    toggleBookmark, 
+    addPost, 
+    addComment 
+  };
 }
