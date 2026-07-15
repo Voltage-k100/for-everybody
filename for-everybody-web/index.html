@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Everybody — Diga o que pensas. Todos te ouvem.</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23d97706' width='100' height='100' rx='20'/><circle cx='50' cy='35' r='25' fill='%2314b8a6'/><rect x='20' y='60' width='60' height='6' fill='%2314b8a6' rx='3'/></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --coral: #d97706;
+            --turquoise: #14b8a6;
+            --bg-light: #fefaf5;
+            --fg-dark: #1f2937;
+            --border-light: #e5e7eb;
+            --secondary-light: #f3f4f6;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--fg-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Left */
+        .sidebar-left {
+            width: 280px;
+            border-right: 1px solid var(--border-light);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background: var(--bg-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logo:hover {
+            background: rgba(217, 119, 6, 0.1);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--fg-dark);
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--fg-dark);
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .nav-item:hover {
+            background: rgba(20, 184, 166, 0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(20, 184, 166, 0.15);
+            color: var(--turquoise);
+        }
+
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .publish-btn {
+            width: 100%;
+            background: var(--coral);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: opacity 0.2s;
+        }
+
+        .publish-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Main Feed */
+        .main-feed {
+            flex: 1;
+            max-width: 600px;
+            border-right: 1px solid var(--border-light);
+            min-height: 100vh;
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            width: 320px;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background: var(--bg-light);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            background: var(--secondary-light);
+            font-size: 14px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            border-color: var(--coral);
+            background: white;
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: var(--fg-dark);
+        }
+
+        .trend-item {
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .trend-item:hover {
+            background: rgba(20, 184, 166, 0.1);
+        }
+
+        .trend-category {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .trend-tag {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--fg-dark);
+            margin: 4px 0;
+        }
+
+        .trend-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Header */
+        .feed-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            background: rgba(254, 250, 245, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .feed-title {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--fg-dark);
+        }
+
+        /* Tabs */
+        .feed-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 56px;
+            background: rgba(254, 250, 245, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 9;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--fg-dark);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 4px;
+            background: var(--coral);
+            border-radius: 2px;
+        }
+
+        /* Compose Box */
+        .compose-box {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .avatar-tu {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+
+        .avatar-ab {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .avatar-mc {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
+        .avatar-sa {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+
+        .compose-content {
+            flex: 1;
+        }
+
+        .compose-textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 17px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            color: var(--fg-dark);
+        }
+
+        .compose-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .compose-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .compose-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--turquoise);
+            transition: background 0.2s;
+            font-size: 18px;
+        }
+
+        .icon-btn:hover {
+            background: rgba(20, 184, 166, 0.1);
+        }
+
+        /* Post Card */
+        .post-card {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: background 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-card:hover {
+            background: rgba(20, 184, 166, 0.05);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .post-name {
+            font-weight: 700;
+            color: var(--fg-dark);
+        }
+
+        .post-handle {
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+
+        .post-time {
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .post-content {
+            color: var(--fg-dark);
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .post-tag {
+            color: var(--turquoise);
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .post-tag:hover {
+            text-decoration: underline;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            max-width: 425px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 0;
+            transition: color 0.2s;
+        }
+
+        .action-group:hover {
+            color: var(--turquoise);
+        }
+
+        .action-group.liked {
+            color: var(--coral);
+        }
+
+        .action-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+        }
+
+        .action-icon.heart {
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .action-icon.heart.pulse {
+            animation: heartPulse 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.25); }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar-right {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-left {
+                width: 60px;
+                padding: 12px;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .publish-btn {
+                display: none;
+            }
+
+            .main-feed {
+                max-width: 100%;
+            }
+        }
+
+        .verified-badge {
+            color: var(--turquoise);
+            font-size: 14px;
+        }
+
+        .end-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect fill="#d97706" width="100" height="100" rx="20"/>
+                        <circle cx="50" cy="35" r="25" fill="#14b8a6"/>
+                        <rect x="20" y="60" width="60" height="6" fill="#14b8a6" rx="3"/>
+                    </svg>
+                </div>
+                <div class="logo-text">For Everybody</div>
+            </div>
+
+            <ul class="nav-menu">
+                <li><button class="nav-item active" onclick="switchTab('home')">
+                    <span class="nav-icon">🏠</span>
+                    <span>Início</span>
+                </button></li>
+                <li><button class="nav-item" onclick="switchTab('explore')">
+                    <span class="nav-icon">🔍</span>
+                    <span>Explorar</span>
+                </button></li>
+                <li><button class="nav-item" onclick="switchTab('notifications')">
+                    <span class="nav-icon">🔔</span>
+                    <span>Notificações</span>
+                </button></li>
+                <li><button class="nav-item" onclick="switchTab('messages')">
+                    <span class="nav-icon">✉️</span>
+                    <span>Mensagens</span>
+                </button></li>
+                <li><button class="nav-item" onclick="switchTab('bookmarks')">
+                    <span class="nav-icon">🔖</span>
+                    <span>Guardados</span>
+                </button></li>
+                <li><button class="nav-item" onclick="switchTab('profile')">
+                    <span class="nav-icon">👤</span>
+                    <span>Perfil</span>
+                </button></li>
+            </ul>
+
+            <button class="publish-btn" onclick="focusCompose()">Publicar</button>
+        </div>
+
+        <!-- Main Feed -->
+        <div class="main-feed">
+            <div class="feed-header">
+                <div class="feed-title">Início</div>
+                <span style="font-size: 20px; cursor: pointer;">✨</span>
+            </div>
+
+            <div class="feed-tabs">
+                <button class="tab active" onclick="switchFeedTab('foryou')">Para ti</button>
+                <button class="tab" onclick="switchFeedTab('following')">A seguir</button>
+            </div>
+
+            <!-- Compose Box -->
+            <div class="compose-box">
+                <div class="avatar avatar-tu">TU</div>
+                <div class="compose-content">
+                    <textarea id="composeInput" class="compose-textarea" placeholder="O que está a acontecer?" rows="2"></textarea>
+                    <div class="compose-footer" id="composeFooter" style="display: none;">
+                        <div class="compose-actions">
+                            <button class="icon-btn" title="Imagem">🖼️</button>
+                            <button class="icon-btn" title="Emoji">😊</button>
+                            <button class="icon-btn" title="Calendário">📅</button>
+                            <button class="icon-btn" title="Localização">📍</button>
+                        </div>
+                        <button class="publish-btn" style="margin: 0; width: auto; padding: 8px 24px; font-size: 14px;" onclick="publishPost()">Publicar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Feed -->
+            <div id="postsContainer"></div>
+
+            <div class="end-message">
+                <p>Chegaste ao fim do feed.</p>
+                <p style="font-size: 12px; margin-top: 8px;">Volta mais tarde para mais conteúdo.</p>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar-right">
+            <input type="text" class="search-box" placeholder="Pesquisar no For Everybody">
+
+            <div class="section-title">Tendências</div>
+            <div id="trendsContainer"></div>
+
+            <div style="height: 1px; background: var(--border-light); margin: 20px 0;"></div>
+
+            <div class="section-title">Quem seguir</div>
+            <div id="suggestionsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mock Data
+        const users = {
+            u1: { name: 'Marina Costa', handle: 'marinacosta', avatar: 'MC', verified: true },
+            u2: { name: 'João Pereira', handle: 'joaopereira', avatar: 'JP', verified: false },
+            u3: { name: 'Ana Beatriz', handle: 'anabeatriz', avatar: 'AB', verified: true },
+            u4: { name: 'Carlos Eduardo', handle: 'cadu', avatar: 'CE', verified: false },
+            u5: { name: 'Sofia Almeida', handle: 'sofiaalm', avatar: 'SA', verified: true },
+        };
+
+        const trends = [
+            { tag: '#WarmHorizon', category: 'Tecnologia · Em alta', posts: '12.4 mil' },
+            { tag: '#PraçaDigital', category: 'Sociedade', posts: '8.9 mil' },
+            { tag: '#DesignAcolhedor', category: 'Design', posts: '5.6 mil' },
+            { tag: '#TypeScript', category: 'Programação', posts: '12.3 mil' },
+            { tag: '#ArteIndependente', category: 'Cultura · Em alta', posts: '7.8 mil' },
+        ];
+
+        let posts = [
+            {
+                id: 1,
+                author: 'u3',
+                content: 'Acabei de ler um estudo fascinante sobre como redes sociais podem ser projetadas para reduzir polarização em vez de alimentá-la. A chave? Dar às pessoas espaço para contexto, não apenas manchetes.\n\nÉ exatamente isso que queremos construir aqui. Um lugar onde a conversa importa mais que o clique.',
+                tags: ['#tecnologia', '#sociedade'],
+                likes: 342,
+                reposts: 87,
+                comments: 56,
+                liked: false,
+                time: '12min'
+            },
+            {
+                id: 2,
+                author: 'u1',
+                content: 'Design não é só fazer coisas bonitas. É fazer com que as pessoas se sintam em casa.\n\nHoje lancei um novo conceito de interface que chamamos de "Warm Horizon" — cores que acolhem, espaços que respiram. Estou muito orgulhosa do resultado.',
+                tags: ['#design', '#ux'],
+                likes: 189,
+                reposts: 34,
+                comments: 23,
+                liked: true,
+                time: '45min'
+            },
+            {
+                id: 3,
+                author: 'u5',
+                content: 'Thread sobre IA e ética: precisamos falar sobre quem define os limites.\n\n1/ Os modelos de linguagem não são neutros. Cada decisão de treinamento carrega valores.\n\n2/ Transparência não é opcional — é fundamental.',
+                tags: ['#ia', '#ética'],
+                likes: 567,
+                reposts: 142,
+                comments: 89,
+                liked: false,
+                time: '2h'
+            },
+        ];
+
+        function formatNumber(n) {
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+            return n.toString();
+        }
+
+        function getAvatarClass(initials) {
+            const map = { 'TU': 'avatar-tu', 'MC': 'avatar-mc', 'JP': 'avatar-tu', 'AB': 'avatar-ab', 'CE': 'avatar-mc', 'SA': 'avatar-sa' };
+            return map[initials] || 'avatar-tu';
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = posts.map(post => {
+                const author = users[post.author];
+                return `
+                    <div class="post-card">
+                        <div class="avatar ${getAvatarClass(author.avatar)}">${author.avatar}</div>
+                        <div style="flex: 1;">
+                            <div class="post-header">
+                                <span class="post-name">${author.name}</span>
+                                ${author.verified ? '<span class="verified-badge">✓</span>' : ''}
+                                <span class="post-handle">@${author.handle}</span>
+                                <span class="post-time">· ${post.time}</span>
+                            </div>
+                            <div class="post-content">${post.content}</div>
+                            ${post.tags.length > 0 ? `<div class="post-tags">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>` : ''}
+                            <div class="post-actions">
+                                <div class="action-group" onclick="toggleLike(${post.id})">
+                                    <span class="action-icon heart ${post.liked ? 'liked' : ''}" id="heart-${post.id}">
+                                        ${post.liked ? '❤️' : '🤍'}
+                                    </span>
+                                    <span id="likes-${post.id}">${formatNumber(post.likes)}</span>
+                                </div>
+                                <div class="action-group">
+                                    <span class="action-icon">💬</span>
+                                    <span>${formatNumber(post.comments)}</span>
+                                </div>
+                                <div class="action-group">
+                                    <span class="action-icon">🔄</span>
+                                    <span>${formatNumber(post.reposts)}</span>
+                                </div>
+                                <div class="action-group">
+                                    <span class="action-icon">🔖</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.liked = !post.liked;
+                post.likes += post.liked ? 1 : -1;
+                
+                const heart = document.getElementById(`heart-${postId}`);
+                heart.textContent = post.liked ? '❤️' : '🤍';
+                heart.classList.toggle('pulse');
+                
+                document.getElementById(`likes-${postId}`).textContent = formatNumber(post.likes);
+            }
+        }
+
+        function publishPost() {
+            const textarea = document.getElementById('composeInput');
+            const content = textarea.value.trim();
+            
+            if (content) {
+                const newPost = {
+                    id: Math.max(...posts.map(p => p.id)) + 1,
+                    author: 'me',
+                    content: content,
+                    tags: [],
+                    likes: 0,
+                    reposts: 0,
+                    comments: 0,
+                    liked: false,
+                    time: 'agora'
+                };
+                posts.unshift(newPost);
+                textarea.value = '';
+                document.getElementById('composeFooter').style.display = 'none';
+                renderPosts();
+            }
+        }
+
+        function focusCompose() {
+            document.getElementById('composeInput').focus();
+        }
+
+        document.getElementById('composeInput').addEventListener('focus', () => {
+            document.getElementById('composeFooter').style.display = 'flex';
+        });
+
+        function renderTrends() {
+            const container = document.getElementById('trendsContainer');
+            container.innerHTML = trends.map(trend => `
+                <div class="trend-item">
+                    <div class="trend-category">${trend.category}</div>
+                    <div class="trend-tag">${trend.tag}</div>
+                    <div class="trend-count">${trend.posts} publicações</div>
+                </div>
+            `).join('');
+        }
+
+        function renderSuggestions() {
+            const container = document.getElementById('suggestionsContainer');
+            const suggested = Object.entries(users).slice(0, 4).map(([id, user]) => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border-radius: 12px; background: var(--secondary-light);">
+                    <div class="avatar ${getAvatarClass(user.avatar)}" style="width: 40px; height: 40px; font-size: 14px;">${user.avatar}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 14px;">${user.name} ${user.verified ? '✓' : ''}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">@${user.handle}</div>
+                    </div>
+                    <button style="background: var(--coral); color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; font-weight: 700; font-size: 12px;">Seguir</button>
+                </div>
+            `).join('');
+            container.innerHTML = suggested;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        function switchFeedTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Initialize
+        renderPosts();
+        renderTrends();
+        renderSuggestions();
+    </script>
+</body>
+</html>
