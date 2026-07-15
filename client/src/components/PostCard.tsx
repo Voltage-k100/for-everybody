@@ -13,7 +13,14 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onLike, onRepost, onBookmark, onComment }: PostCardProps) {
-  const author = users[post.authorId];
+  // Proteção contra author undefined (era o erro)
+  const author = users[post.authorId] || { 
+    name: "Usuário Desconhecido", 
+    handle: "unknown", 
+    avatar: "??", 
+    verified: false 
+  };
+
   const [pulse, setPulse] = useState(false);
 
   const handleLike = () => {
@@ -27,7 +34,11 @@ export function PostCard({ post, onLike, onRepost, onBookmark, onComment }: Post
   return (
     <article className="post-enter px-4 py-3 border-b border-border hover:bg-accent/30 transition-colors duration-150 cursor-pointer">
       <div className="flex gap-3">
-        <Avatar initials={author.avatar} name={author.name} size="md" />
+        <Avatar 
+          initials={author.avatar} 
+          name={author.name} 
+          size="md" 
+        />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 text-sm">
@@ -38,6 +49,7 @@ export function PostCard({ post, onLike, onRepost, onBookmark, onComment }: Post
             <span className="text-muted-foreground font-mono-code text-xs">@{author.handle}</span>
             <span className="text-muted-foreground">·</span>
             <span className="text-muted-foreground text-xs">{formatTime(post.timestamp)}</span>
+            
             <button className="ml-auto text-muted-foreground hover:text-foreground transition-colors -mr-1 p-1 rounded-full hover:bg-accent" onClick={(e) => e.stopPropagation()}>
               <MoreHorizontal className="w-4 h-4" />
             </button>
@@ -49,7 +61,7 @@ export function PostCard({ post, onLike, onRepost, onBookmark, onComment }: Post
 
           {post.tags && post.tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {post.tags.map((tag) => (
+              {post.tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="text-turquoise text-sm font-medium hover:underline cursor-pointer"
